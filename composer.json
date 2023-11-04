@@ -1,0 +1,18 @@
+{
+    "name": "weida/oceanengine-core",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Weida\\OceanengineCore\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "weida",
+            "email": "sgenmi@gmail.com"
+        }
+    ],
+    "require": {
+        "weida/oauth2-core": "^0.0.2"
+    }
+}
