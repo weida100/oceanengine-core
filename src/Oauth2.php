@@ -6,16 +6,25 @@ declare(strict_types=1);
  * Email: sgenmi@gmail.com
  */
 
-namespace Weida\OceanengineCore\Contract;
+namespace Weida\OceanengineCore;
 
 use RuntimeException;
 use Throwable;
 use Weida\Oauth2Core\AbstractApplication;
+use Weida\Oauth2Core\Contract\ConfigInterface;
 use Weida\Oauth2Core\Contract\UserInterface;
 use Weida\Oauth2Core\User;
+use Weida\OceanengineCore\Contract\AccessTokenInterface;
 
 class Oauth2 extends AbstractApplication
 {
+    private AccessTokenInterface $accessToken;
+    public function __construct(array|ConfigInterface $config,AccessTokenInterface $accessToken)
+    {
+        parent::__construct($config);
+        $this->accessToken = $accessToken;
+    }
+
     /**
      * @return string
      * @author Weida
@@ -74,13 +83,13 @@ class Oauth2 extends AbstractApplication
             throw new RuntimeException('Request userinfo exception');
         }
         $arr = json_decode($resp->getBody()->getContents(),true);
-        if (empty($arr['id'])) {
+        if (empty($arr['data']['id'])) {
             throw new RuntimeException('Failed to get userinfo: ' . json_encode($arr, JSON_UNESCAPED_UNICODE));
         }
-        return new User([
-            'uid'=>$arr['id'],
-            'nickname'=>$arr['display_name'],
-            'email'=>$arr['email']??'',
+       return new User([
+            'uid'=>$arr['data']['id'],
+            'nickname'=>$arr['data']['display_name'],
+            'email'=>$arr['data']['email']??'',
         ]);
     }
 
@@ -107,8 +116,13 @@ class Oauth2 extends AbstractApplication
         $params=[
             'app_id'=>$this->getConfig()->get('client_id'),
             'secret'=>$this->getConfig()->get('client_secret'),
+            'grant_type'=>'auth_code',
             'auth_code'=>$code
         ];
+        //千川 要加上 grant_type参数
+//        if($this->getConfig()->get('app_type')=='qianchuan'){
+//            $params['grant_type']='auth_code';
+//        }
         $resp = $this->getHttpClient()->request('POST',$url,[
             'headers'=>[
                 'Content-Type'=>'application/json'
@@ -119,11 +133,33 @@ class Oauth2 extends AbstractApplication
             throw new RuntimeException('Request access_token exception');
         }
         $arr = json_decode($resp->getBody()->getContents(),true);
-        if (empty($arr['access_token'])) {
+        if (empty($arr['data']['access_token'])) {
             throw new RuntimeException('Failed to get access_token: ' . json_encode($arr, JSON_UNESCAPED_UNICODE));
         }
+        $userInfo =  $this->userFromToken($arr['data']['access_token']);
+        $uid = $userInfo->getId();
+        //保存通过code获取的access_token
+        $callback = $this->getConfig()->get('access_token_callback');
+
+        if($callback && is_callable($callback)){
+            try {
+                call_user_func($callback,...[
+                    'clientId'=>$this->getConfig()->get('client_id'),
+                    'uid'=>$uid,
+                    'accessToken'=>$arr['data']['access_token'],
+                    'accessTokenExpiresIn'=>(int)$arr['data']['expires_in'],
+                    'refreshToken'=>$arr['data']['refresh_token'],
+                    'refreshTokenExpiresIn'=>(int)$arr['data']['refresh_token_expires_in']
+                ]);
+            }catch (\Throwable $e){
+            }
+        }
+        $this->accessToken->saveCache(intval($uid),$arr['data']['access_token'],intval($arr['data']['expires_in']));
+
+        $arr['uid']= $uid;
+        $arr['nickname'] =$userInfo->getNickname();
+        $arr['email'] =$userInfo->getEmail();
         return $arr;
     }
-
 
 }
