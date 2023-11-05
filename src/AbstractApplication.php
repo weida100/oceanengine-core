@@ -6,15 +6,17 @@ declare(strict_types=1);
  * Email: sgenmi@gmail.com
  */
 
-namespace Weida\OceanengineCore\Contract;
+namespace Weida\OceanengineCore;
 
 use Weida\Oauth2Core\Config;
 use Weida\Oauth2Core\Contract\ConfigInterface;
+use Weida\OceanengineCore\Contract\AccessTokenInterface;
 
 class Application
 {
     private Oauth2 $oauth2;
     private ConfigInterface $config;
+    private AccessTokenInterface $accessToken;
 
     public function __construct(array $config)
     {
@@ -48,6 +50,15 @@ class Application
             $this->oauth2 = new Oauth2($this->getConfig());
         }
         return $this->oauth2;
+    }
+
+    public function getAccessToken():AccessTokenInterface {
+        if(empty($this->accessToken)){
+            $this->accessToken = new AccessToken(
+              $this->getConfig(),
+
+            );
+        }
     }
 
 }
