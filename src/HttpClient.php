@@ -83,4 +83,10 @@ class HttpClient implements HttpClientInterface
     {
         return $option? ($this->config[$option]??null):$this->config;
     }
+
+    public function getClient(): Client
+    {
+        return $this->client;
+    }
+
 }
