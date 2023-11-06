@@ -8,11 +8,14 @@
     },
     "authors": [
         {
-            "name": "weida",
+            "name": "Weida",
             "email": "sgenmi@gmail.com"
         }
     ],
     "require": {
-        "weida/oauth2-core": "^0.0.2"
+        "php": ">=8.0",
+        "weida/oauth2-core": "^0.0.2",
+        "guzzlehttp/guzzle": "^7.0",
+        "psr/simple-cache": "^3.0"
     }
 }
