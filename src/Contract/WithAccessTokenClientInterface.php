@@ -12,9 +12,9 @@ use Psr\Http\Message\ResponseInterface;
 
 interface WithAccessTokenClientInterface
 {
-    public function request(string $method, string $uri, array $options = []): ResponseInterface;
-    public function get(string $uri, array $options = []): ResponseInterface;
-    public function post(string $uri, array $options = []): ResponseInterface;
-    public function postJson(string $uri, array $options = []):ResponseInterface;
+    public function request(string $method, string|ApiInterface $uri, array $options = []): ResponseInterface;
+    public function get(string|ApiInterface $uri, array $options = []): ResponseInterface;
+    public function post(string|ApiInterface $uri, array $options = []): ResponseInterface;
+    public function postJson(string|ApiInterface $uri, array $postData = []):ResponseInterface;
 
 }
