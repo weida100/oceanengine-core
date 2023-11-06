@@ -10,7 +10,6 @@ namespace Weida\OceanengineCore;
 
 use RuntimeException;
 use Psr\SimpleCache\CacheInterface;
-use Weida\Oauth2Core\Contract\ConfigInterface;
 use Weida\Oauth2Core\Contract\HttpClientInterface;
 use Weida\OceanengineCore\Contract\AccessTokenInterface;
 
