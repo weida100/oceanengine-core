@@ -12,17 +12,28 @@ use Weida\OceanengineCore\Contract\ApiInterface;
 
 abstract class AbstractApi implements ApiInterface
 {
-    protected string $url = '';
+    /**
+     * @var string api地址
+     */
+    protected string $_url = '';
 
+    /**
+     * @return string
+     * @author Weida
+     */
     public function getUrl(): string
     {
-        return $this->url;
+        return $this->_url;
     }
 
+    /**
+     * @return array
+     * @author Weida
+     */
     public function getParams(): array
     {
        $vars = get_object_vars($this);
-       print_r($vars);
-       exit();
+       unset($vars['_url']);
+       return $vars;
     }
 }
