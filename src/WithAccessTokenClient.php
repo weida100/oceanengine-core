@@ -86,7 +86,7 @@ class WithAccessTokenClient implements WithAccessTokenClientInterface
         }
         $options['headers']['Access-Token'] = $this->accessToken->getToken();
         $options['headers']['Content-Type'] = 'application/json';
-        return $this->client->get($uri,$options);
+        return $this->client->post($uri,$options);
     }
 
     /**
@@ -110,7 +110,7 @@ class WithAccessTokenClient implements WithAccessTokenClientInterface
         }
         $options['headers']['Access-Token'] = $this->accessToken->getToken();
         $options['headers']['Content-Type'] = 'application/json';
-        return $this->client->get($uri,$options);
+        return $this->client->post($uri,$options);
     }
 
 }
